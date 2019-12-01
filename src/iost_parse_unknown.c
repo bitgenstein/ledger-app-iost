@@ -15,9 +15,9 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "eos_parse_unknown.h"
+#include "iost_parse_unknown.h"
 #include "os.h"
-#include "eos_utils.h"
+#include "iost_utils.h"
 #include <string.h>
 
 void parseUnknownAction(uint8_t *buffer, uint32_t bufferLength, uint8_t argNum, actionArgument_t *arg) {
