@@ -15,10 +15,10 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef __EOS_PARSE_EOSIO_H__
-#define __EOS_PARSE_EOSIO_H__
+#ifndef __IOST_PARSE_IOST_H__
+#define __IOST_PARSE_IOST_H__
 
-#include "eos_parse.h"
+#include "iost_parse.h"
 
 void parseDelegate(uint8_t *buffer, uint32_t bufferLength, uint8_t argNum, actionArgument_t *arg);
 void parseUndelegate(uint8_t *buffer, uint32_t bufferLength, uint8_t argNum, actionArgument_t *arg);
