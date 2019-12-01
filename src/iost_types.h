@@ -15,8 +15,8 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef __EOS_TYPES_H__
-#define __EOS_TYPES_H__
+#ifndef __IOST_TYPES_H__
+#define __IOST_TYPES_H__
 
 #include <stdint.h>
 
@@ -63,4 +63,4 @@ uint8_t amountlimit_to_string(amountlimit_t *amountlimit, char *out, uint32_t si
 uint32_t public_key_to_wif(uint8_t *publicKey, uint32_t keyLength, char *out, uint32_t outLength);
 uint32_t compressed_public_key_to_wif(uint8_t *publicKey, uint32_t keyLength, char *out, uint32_t outLength);
 
-#endif // __EOS_TYPES_H__
+#endif // __IOST_TYPES_H__
