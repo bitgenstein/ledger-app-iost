@@ -15,10 +15,10 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef __EOS_PARSE_UNKNOWN_H__
-#define __EOS_PARSE_UNKNOWN_H__
+#ifndef __IOST_PARSE_UNKNOWN_H__
+#define __IOST_PARSE_UNKNOWN_H__
 
-#include "eos_parse.h"
+#include "iost_parse.h"
 
 void parseUnknownAction(uint8_t *buffer, uint32_t bufferLength, uint8_t argNum, actionArgument_t *arg);
 
