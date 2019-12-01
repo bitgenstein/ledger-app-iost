@@ -15,13 +15,13 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "eos_types.h"
-#include "eos_utils.h"
+#include "iost_types.h"
+#include "iost_utils.h"
 #include "os.h"
 #include <stdbool.h>
 #include "string.h"
 
-static const char* charmap = ".12345abcdefghijklmnopqrstuvwxyz";
+static const char* charmap = "0123456789abcdefghijklmnopqrstuvwxyz_";
 
 name_t buffer_to_name_type(uint8_t *in, uint32_t size) {
     if (size < 8) {
@@ -58,16 +58,16 @@ uint8_t name_to_string(name_t value, char *out, uint32_t size) {
     return actual_size;
 }
 
-bool is_valid_symbol(symbol_t sym) {
-    sym >>= 8;
+bool is_valid_symbol(token_t tokensym) {
+    tokensym >>= 8;
     for( int i = 0; i < 7; ++i ) {
-        char c = (char)(sym & 0xff);
+        char c = (char)(tokensym & 0xff);
         if( !('A' <= c && c <= 'Z')  ) return false;
-        sym >>= 8;
-        if( !(sym & 0xff) ) {
+        tokensym >>= 8;
+        if( !(tokensym & 0xff) ) {
             do {
-                sym >>= 8;
-                if( (sym & 0xff) ) return false;
+                tokensym >>= 8;
+                if( (tokensym & 0xff) ) return false;
                 ++i;
             } while( i < 7 );
         }
@@ -75,7 +75,7 @@ bool is_valid_symbol(symbol_t sym) {
     return true;
 }
 
-uint32_t symbol_length(symbol_t tmp) {
+uint32_t symbol_length(token_t tmp) {
     tmp >>= 8; /// skip precision
     uint32_t length = 0;
     while( tmp & 0xff && length <= 7) {
@@ -86,12 +86,12 @@ uint32_t symbol_length(symbol_t tmp) {
     return length;
 }
 
-uint64_t symbol_precision(symbol_t sym) {
-    return sym & 0xff;
+uint64_t symbol_precision(token_t tokensym) {
+    return tokensym & 0xff;
 }
 
-uint8_t symbol_to_string(symbol_t sym, char *out, uint32_t size) {
-    sym >>= 8;
+uint8_t token_to_string(token_t tokensym, char *out, uint32_t size) {
+    tokensym >>= 8;
 
     if (size < 8) {
         THROW(EXCEPTION_OVERFLOW);
@@ -101,55 +101,55 @@ uint8_t symbol_to_string(symbol_t sym, char *out, uint32_t size) {
     char tmp[8] = { 0 };
 
     for (i = 0; i < 7; ++i) {
-        char c = (char)(sym & 0xff);
+        char c = (char)(tokensym & 0xff);
         if (!c) break;
         tmp[i] = c;
-        sym >>= 8;
+        tokensym >>= 8;
     }
 
     os_memmove(out, tmp, i);
     return i;
 }
 
-uint8_t asset_to_string(asset_t *asset, char *out, uint32_t size) {
-    if (asset == NULL) {
+uint8_t amountlimit_to_string(amountlimit_t *amountlimit, char *out, uint32_t size) {
+    if (amountlimit == NULL) {
         THROW(INVALID_PARAMETER);
     }
 
-    int64_t p = (int64_t)symbol_precision(asset->symbol);
+    int64_t p = (int64_t)token_precision(amountlimit->token);
     int64_t p10 = 1;
     while (p > 0) {
         p10 *= 10; --p;
     }
 
-    p = (int64_t)symbol_precision(asset->symbol);
+    p = (int64_t)token_precision(amountlimit->token);
 
     char fraction[p+1];
     fraction[p] = 0;
-    int64_t change = asset->amount % p10;
+    int64_t change = amountlimit->value % p10;
 
     for (int64_t i = p - 1; i >= 0; --i) {
         fraction[i] = (change % 10) + '0';
         change /= 10;
     }
-    char symbol[9];
-    os_memset(symbol, 0, sizeof(symbol));
-    symbol_to_string(asset->symbol, symbol, 8);
+    char token[9];
+    os_memset(token, 0, sizeof(token));
+    token_to_string(amountlimit->token, token, 8);
 
     char tmp[64];
     os_memset(tmp, 0, sizeof(tmp));
-    i64toa(asset->amount / p10, tmp);
-    uint32_t assetTextLength = strlen(tmp);
-    tmp[assetTextLength++] = '.';
-    os_memmove(tmp + assetTextLength, fraction, strlen(fraction));
-    assetTextLength = strlen(tmp);
-    tmp[assetTextLength++] = ' ';
-    os_memmove(tmp + assetTextLength, symbol, strlen(symbol));
-    assetTextLength = strlen(tmp);
+    i64toa(amountlimit->value / p10, tmp);
+    uint32_t amountlimitTextLength = strlen(tmp);
+    tmp[amountlimitTextLength++] = '.';
+    os_memmove(tmp + amountlimitTextLength, fraction, strlen(fraction));
+    amountlimitTextLength = strlen(tmp);
+    tmp[amountlimitTextLength++] = ' ';
+    os_memmove(tmp + amountlimitTextLength, token, strlen(token));
+   amountlimitTextLength = strlen(tmp);
     
-    os_memmove(out, tmp, assetTextLength);
+    os_memmove(out, tmp, amountlimitTextLength);
 
-    return assetTextLength;
+    return amountlimitTextLength;
 }
 
 uint32_t unpack_variant32(uint8_t *in, uint32_t length, variant32_t *value) {
