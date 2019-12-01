@@ -15,10 +15,10 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "eos_parse.h"
+#include "iost_parse.h"
 #include "os.h"
 #include "cx.h"
-#include "eos_types.h"
+#include "iost_types.h"
 #include <stdbool.h>
 #include <string.h>
 
@@ -76,52 +76,6 @@ void parsePublicKeyField(uint8_t *in, uint32_t inLength, const char fieldName[],
     *written = writtenToBuff;
 }
 
-void parseUint16Field(uint8_t *in, uint32_t inLength, const char fieldName[], actionArgument_t *arg, uint32_t *read, uint32_t *written) {
-    if (inLength < sizeof(uint16_t)) {
-        PRINTF("parseActionData Insufficient buffer\n");
-        THROW(EXCEPTION);
-    }
-    uint32_t labelLength = strlen(fieldName);
-    if (labelLength > sizeof(arg->label)) {
-        PRINTF("parseActionData Label too long\n");
-        THROW(EXCEPTION);
-    }
-    
-    os_memset(arg->label, 0, sizeof(arg->label));
-    os_memset(arg->data, 0, sizeof(arg->data));
-    
-    os_memmove(arg->label, fieldName, labelLength);
-    uint16_t value;
-    os_memmove(&value, in, sizeof(uint16_t));
-    snprintf(arg->data, sizeof(arg->data)-1, "%d", value);
-    
-    *read = sizeof(uint16_t);
-    *written = strlen(arg->data);
-}
-
-void parseUint32Field(uint8_t *in, uint32_t inLength, const char fieldName[], actionArgument_t *arg, uint32_t *read, uint32_t *written) {
-    if (inLength < sizeof(uint32_t)) {
-        PRINTF("parseActionData Insufficient buffer\n");
-        THROW(EXCEPTION);
-    }
-    uint32_t labelLength = strlen(fieldName);
-    if (labelLength > sizeof(arg->label)) {
-        PRINTF("parseActionData Label too long\n");
-        THROW(EXCEPTION);
-    }
-    
-    os_memset(arg->label, 0, sizeof(arg->label));
-    os_memset(arg->data, 0, sizeof(arg->data));
-    
-    os_memmove(arg->label, fieldName, labelLength);
-    uint32_t value;
-    os_memmove(&value, in, sizeof(uint32_t));
-    snprintf(arg->data, sizeof(arg->data)-1, "%d", value);
-    
-    *read = sizeof(uint32_t);
-    *written = strlen(arg->data);
-}
-
 void parseUInt64Field(uint8_t *in, uint32_t inLength, const char fieldName[], actionArgument_t *arg, uint32_t *read, uint32_t *written) {
     if (inLength < sizeof(uint64_t)) {
         PRINTF("parseActionData Insufficient buffer\n");
@@ -145,8 +99,8 @@ void parseUInt64Field(uint8_t *in, uint32_t inLength, const char fieldName[], ac
     *written = strlen(arg->data);
 }
 
-void parseAssetField(uint8_t *in, uint32_t inLength, const char fieldName[], actionArgument_t *arg, uint32_t *read, uint32_t *written) {
-    if (inLength < sizeof(asset_t)) {
+void parseAmountlimitField(uint8_t *in, uint32_t inLength, const char fieldName[], actionArgument_t *arg, uint32_t *read, uint32_t *written) {
+    if (inLength < sizeof(amountlimit_t)) {
         PRINTF("parseActionData Insufficient buffer\n");
         THROW(EXCEPTION);
     }
@@ -161,11 +115,11 @@ void parseAssetField(uint8_t *in, uint32_t inLength, const char fieldName[], act
     os_memset(arg->data, 0, sizeof(arg->data));
 
     os_memmove(arg->label, fieldName, labelLength);
-    asset_t asset;
-    os_memmove(&asset, in, sizeof(asset));
-    uint32_t writtenToBuff = asset_to_string(&asset, arg->data, sizeof(arg->data)-1); 
+    amountlimit_t amountlimit;
+    os_memmove(&amountlimit, in, sizeof(asset));
+    uint32_t writtenToBuff = amountlimit_to_string(&amountlimit, arg->data, sizeof(arg->data)-1); 
 
-    *read = sizeof(asset_t);
+    *read = sizeof(amountlimit_t);
     *written = writtenToBuff;
 }
 
